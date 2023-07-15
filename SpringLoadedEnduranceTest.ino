@@ -1,12 +1,14 @@
+#include "pinDescription.h"
+
 void setup()
 {
-    pinMode(13, OUTPUT);
+    pinMode(ON_BOARD_LED_PIN, OUTPUT);
 }
 
 void loop()
 {
-    digitalWrite(13,HIGH);
+    digitalWrite(ON_BOARD_LED_PIN,HIGH);
     delay(1000);
-    digitalWrite(13,LOW);
+    digitalWrite(ON_BOARD_LED_PIN,LOW);
     delay(1000);
 }
