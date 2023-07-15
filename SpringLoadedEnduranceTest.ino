@@ -6,6 +6,7 @@
 
 
 #include "pinDescription.h"
+#include "lcdControl.h"
 
 char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 
@@ -36,24 +37,5 @@ void loop()
     lcd.print("Good Night");
     delay(1000);
 
-    lcd.setCursor(0,2);
-    lcd.print(rtc.year());
-    lcd.setCursor(2,2);
-    lcd.print("/");
-    lcd.setCursor(3,2);
-    lcd.print(rtc.month());
-    lcd.print("/");
-    lcd.setCursor(5,2);
-    lcd.print(rtc.day());
-
-    lcd.setCursor(8,2);
-    lcd.print(rtc.hour());
-    lcd.setCursor(10,2);
-    lcd.print(':');
-    lcd.setCursor(11,2);
-    lcd.print(rtc.minute());
-    lcd.setCursor(13,2);
-    lcd.print(':');
-    lcd.setCursor(14,2);
-    lcd.println(rtc.second());
+    PrintCurrentTime(lcd, rtc, 2, 0);
 }
