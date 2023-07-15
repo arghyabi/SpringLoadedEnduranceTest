@@ -10,6 +10,9 @@
 
 #define ON_BOARD_LED_PIN            13
 
+#define LCD_MODULE_NO_OF_ROW        4
+#define LCD_MODULE_NO_OF_COLUMN     20
+
 #define LCD_MODULE_ADDRESS          0x27
 #define RTC_MODULE_ADDRESS          0x68
 
