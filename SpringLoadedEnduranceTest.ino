@@ -30,6 +30,8 @@ void setup()
     pinMode(MICRO_SWITCH_S2_NC_PIN, INPUT);
     pinMode(MICRO_SWITCH_S2_NO_PIN, INPUT);
 
+    pinMode(ON_BOARD_LED_PIN, OUTPUT);
+
     if(digitalRead(MICRO_SWITCH_S1_NO_PIN) && digitalRead(MICRO_SWITCH_S2_NC_PIN))
     {
         sequence = -1;
@@ -49,6 +51,8 @@ void setup()
     lcd.print("Count: ");
     lcd.setCursor(8,2);
     lcd.print(cycleCounter);
+
+    digitalWrite(ON_BOARD_LED_PIN, LOW);
 }
 
 void loop()
@@ -86,6 +90,11 @@ void loop()
         lcd.print("Count: ");
         lcd.setCursor(8,2);
         lcd.print(cycleCounter);
+        if(cycleCounter >= 7500000)
+        {
+             digitalWrite(ON_BOARD_LED_PIN, HIGH);
+             cycleCounter = 0;
+        }
     }
 
     PrintCurrentTime(lcd, rtc, 0, 0);
