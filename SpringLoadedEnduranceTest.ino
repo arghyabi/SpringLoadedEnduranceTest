@@ -13,6 +13,8 @@ char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursd
 LiquidCrystal_I2C lcd(LCD_MODULE_ADDRESS, LCD_MODULE_NO_OF_COLUMN, LCD_MODULE_NO_OF_ROW);
 uRTCLib rtc(RTC_MODULE_ADDRESS);
 int sequence = -1;
+int cycleIndex = 0;
+long int cycleCounter = 0;
 
 void setup()
 {
@@ -20,7 +22,6 @@ void setup()
     URTCLIB_WIRE.begin();
     lcd.begin(LCD_MODULE_NO_OF_COLUMN, LCD_MODULE_NO_OF_ROW);
     lcd.setBacklight(HIGH);
-    lcd.print("Hello, World!");
 
     // rtc.set(0, 30, 9, 7, 15, 7, 23);
     // rtc.set(second, minute, hour, dayOfWeek, dayOfMonth, month, year)
@@ -31,24 +32,23 @@ void setup()
 
     if(digitalRead(MICRO_SWITCH_S1_NO_PIN) && digitalRead(MICRO_SWITCH_S2_NC_PIN))
     {
-        lcd.setCursor(0,1);
-        lcd.print("Init Position Left  ");
         sequence = -1;
     }
 
     if(digitalRead(MICRO_SWITCH_S1_NC_PIN) && digitalRead(MICRO_SWITCH_S2_NC_PIN))
     {
         sequence = 0;
-        lcd.setCursor(0,1);
-        lcd.print("Init Position Middle");
     }
 
     if(digitalRead(MICRO_SWITCH_S1_NC_PIN) && digitalRead(MICRO_SWITCH_S2_NO_PIN))
     {
         sequence = 1;
-        lcd.setCursor(0,1);
-        lcd.print("Init Position Right ");
     }
+
+    lcd.setCursor(0,2);
+    lcd.print("Count: ");
+    lcd.setCursor(8,2);
+    lcd.print(cycleCounter);
 }
 
 void loop()
@@ -56,24 +56,37 @@ void loop()
     rtc.refresh();
     if(sequence == -1 && digitalRead(MICRO_SWITCH_S1_NO_PIN) && digitalRead(MICRO_SWITCH_S2_NC_PIN))
     {
-        lcd.setCursor(0,2);
-        lcd.print("Position Left  ");
         sequence++;
+        lcd.setCursor(0,1);
+        lcd.print("Position Left  ");
+        cycleIndex++;
     }
 
     if(sequence == 0 && digitalRead(MICRO_SWITCH_S1_NC_PIN) && digitalRead(MICRO_SWITCH_S2_NC_PIN))
     {
         sequence++;
-        lcd.setCursor(0,2);
+        lcd.setCursor(0,1);
         lcd.print("Position Middle");
+        cycleIndex++;
     }
 
     if(sequence == 1 && digitalRead(MICRO_SWITCH_S1_NC_PIN) && digitalRead(MICRO_SWITCH_S2_NO_PIN))
     {
         sequence = -1;
-        lcd.setCursor(0,2);
+        lcd.setCursor(0,1);
         lcd.print("Position Right ");
+        cycleIndex++;
     }
 
-    PrintCurrentTime(lcd, rtc, 3, 0);
+    if(cycleIndex == 3)
+    {
+        cycleIndex = 0;
+        cycleCounter++;
+        lcd.setCursor(0,2);
+        lcd.print("Count: ");
+        lcd.setCursor(8,2);
+        lcd.print(cycleCounter);
+    }
+
+    PrintCurrentTime(lcd, rtc, 0, 0);
 }
