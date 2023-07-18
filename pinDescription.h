@@ -1,10 +1,10 @@
 #ifndef PIN_DESCRIPTION_H
 #define PIN_DESCRIPTION_H
 
-#define MICRO_SWITCH_1_NO_PIN       3
-#define MICRO_SWITCH_1_NC_PIN       4
-#define MICRO_SWITCH_2_NO_PIN       5
-#define MICRO_SWITCH_2_NC_PIN       6
+#define MICRO_SWITCH_S1_NO_PIN      3
+#define MICRO_SWITCH_S1_NC_PIN      4
+#define MICRO_SWITCH_S2_NO_PIN      5
+#define MICRO_SWITCH_S2_NC_PIN      6
 
 #define RESET_PUSH_SWITCH_PIN       2
 
