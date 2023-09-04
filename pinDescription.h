@@ -10,6 +10,8 @@
 
 #define ON_BOARD_LED_PIN            13
 
+#define POWER_LINE_DETECT_PIN       7
+
 #define LCD_MODULE_NO_OF_ROW        4
 #define LCD_MODULE_NO_OF_COLUMN     20
 
@@ -20,5 +22,7 @@
 #define POSITION_LEFT  -1
 #define POSITION_MIDDLE  0
 #define POSITION_RIGHT  1
+
+#define EEPROM_COUNTER_SAVE_ADDRESS 2
 
 #endif

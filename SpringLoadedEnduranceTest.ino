@@ -3,6 +3,7 @@
 #include <Wire.h> // For I2C
 #include <LiquidCrystal_I2C.h>
 #include <uRTCLib.h>
+#include <EEPROM.h>
 
 
 #include "pinDescription.h"
@@ -30,6 +31,8 @@ bool middlePosCycleComplete = false;
 int currentPosition;
 int previousPosition;
 
+bool isEepromReadNeed = true;
+
 void setup()
 {
     pinMode(ON_BOARD_LED_PIN, OUTPUT);
@@ -43,6 +46,8 @@ void setup()
     pinMode(MICRO_SWITCH_S1_NO_PIN, INPUT);
     pinMode(MICRO_SWITCH_S2_NC_PIN, INPUT);
     pinMode(MICRO_SWITCH_S2_NO_PIN, INPUT);
+
+    pinMode(POWER_LINE_DETECT_PIN, INPUT);
 
     pinMode(ON_BOARD_LED_PIN, OUTPUT);
 
@@ -79,6 +84,30 @@ void setup()
 void loop()
 {
     rtc.refresh();
+
+    if(digitalRead(POWER_LINE_DETECT_PIN) == LOW)
+    {
+        lcd.setCursor(0,3);
+        lcd.print("Power Down;");
+
+        if(!isEepromReadNeed)
+        {
+            EEPROM.write(EEPROM_COUNTER_SAVE_ADDRESS, cycleCounterD);
+            isEepromReadNeed = true;
+        }
+        return;
+    }
+    else
+    {
+        if(isEepromReadNeed)
+        {
+            cycleCounterD = EEPROM.read(EEPROM_COUNTER_SAVE_ADDRESS);
+            lcd.setCursor(0,3);
+            lcd.print("           ");
+            isEepromReadNeed = false;
+        }
+    }
+
     if(digitalRead(MICRO_SWITCH_S1_NO_PIN) && digitalRead(MICRO_SWITCH_S2_NC_PIN))
     {
         // previousPosition = currentPosition;
@@ -159,6 +188,11 @@ void loop()
     default:
         break;
     }
+
+    lcd.setCursor(0,2);
+    lcd.print("Count: ");
+    lcd.setCursor(8,2);
+    lcd.print(cycleCounterD);
 
     if(cycleCounterD >= 7500000)
     {
