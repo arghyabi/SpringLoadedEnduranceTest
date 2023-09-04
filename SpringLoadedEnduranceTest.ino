@@ -8,6 +8,12 @@
 #include "pinDescription.h"
 #include "lcdControl.h"
 
+#define MOVE_LEFT(POS) POS++
+#define MOVE_RIGHT(POS) POS--
+#define MOVEMENT_DETECTION(oldPos, newPos) oldPos - newPos
+#define MOVEMENT_LEFT 1
+#define MOVEMENT_RIGHT -1
+
 char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 
 LiquidCrystal_I2C lcd(LCD_MODULE_ADDRESS, LCD_MODULE_NO_OF_COLUMN, LCD_MODULE_NO_OF_ROW);
@@ -15,6 +21,14 @@ uRTCLib rtc(RTC_MODULE_ADDRESS);
 int sequence = -1;
 int cycleIndex = 0;
 long int cycleCounter = 0;
+
+int cycleIndexPos = 0;
+long cycleCounterD = 0;
+bool cycleIndexPosMiddle = false;
+bool middlePosCycleComplete = false;
+
+int currentPosition;
+int previousPosition;
 
 void setup()
 {
@@ -34,17 +48,24 @@ void setup()
 
     if(digitalRead(MICRO_SWITCH_S1_NO_PIN) && digitalRead(MICRO_SWITCH_S2_NC_PIN))
     {
+        previousPosition = POSITION_LEFT;
         sequence = -1;
+        cycleIndexPos = POSITION_LEFT;
     }
 
     if(digitalRead(MICRO_SWITCH_S1_NC_PIN) && digitalRead(MICRO_SWITCH_S2_NC_PIN))
     {
+        previousPosition = POSITION_MIDDLE;
         sequence = 0;
+        cycleIndexPos = POSITION_MIDDLE;
+        cycleIndexPosMiddle = true;
     }
 
     if(digitalRead(MICRO_SWITCH_S1_NC_PIN) && digitalRead(MICRO_SWITCH_S2_NO_PIN))
     {
+        previousPosition = POSITION_RIGHT;
         sequence = 1;
+        cycleIndexPos = POSITION_RIGHT;
     }
 
     lcd.setCursor(0,2);
@@ -58,44 +79,108 @@ void setup()
 void loop()
 {
     rtc.refresh();
-    if(sequence == -1 && digitalRead(MICRO_SWITCH_S1_NO_PIN) && digitalRead(MICRO_SWITCH_S2_NC_PIN))
+    if(digitalRead(MICRO_SWITCH_S1_NO_PIN) && digitalRead(MICRO_SWITCH_S2_NC_PIN))
     {
-        sequence++;
+        // previousPosition = currentPosition;
+        // currentPosition = POSITION_LEFT;
+        // sequence++;
+        currentPosition = POSITION_LEFT;
         lcd.setCursor(0,1);
         lcd.print("Position Left  ");
         cycleIndex++;
     }
 
-    if(sequence == 0 && digitalRead(MICRO_SWITCH_S1_NC_PIN) && digitalRead(MICRO_SWITCH_S2_NC_PIN))
+    if(digitalRead(MICRO_SWITCH_S1_NC_PIN) && digitalRead(MICRO_SWITCH_S2_NC_PIN))
     {
-        sequence++;
+        currentPosition = POSITION_MIDDLE;
+        // sequence++;
         lcd.setCursor(0,1);
         lcd.print("Position Middle");
         cycleIndex++;
     }
 
-    if(sequence == 1 && digitalRead(MICRO_SWITCH_S1_NC_PIN) && digitalRead(MICRO_SWITCH_S2_NO_PIN))
+    if(digitalRead(MICRO_SWITCH_S1_NC_PIN) && digitalRead(MICRO_SWITCH_S2_NO_PIN))
     {
-        sequence = -1;
+        currentPosition = POSITION_RIGHT;
+        // sequence = -1;
         lcd.setCursor(0,1);
         lcd.print("Position Right ");
         cycleIndex++;
     }
 
-    if(cycleIndex == 3)
+    switch (MOVEMENT_DETECTION(previousPosition, currentPosition))
     {
-        cycleIndex = 0;
-        cycleCounter++;
-        lcd.setCursor(0,2);
-        lcd.print("Count: ");
-        lcd.setCursor(8,2);
-        lcd.print(cycleCounter);
-        if(cycleCounter >= 7500000)
+    case MOVEMENT_LEFT:
+        MOVE_LEFT(previousPosition);
+        if(previousPosition == cycleIndexPos)
         {
-             digitalWrite(ON_BOARD_LED_PIN, HIGH);
-             cycleCounter = 0;
+            if(cycleIndexPosMiddle)
+            {
+                if(middlePosCycleComplete)
+                {
+                    cycleCounterD++;
+                    middlePosCycleComplete = false;
+                }
+                else
+                {
+                    middlePosCycleComplete = true;
+                }
+            }
+            else
+            {
+                cycleCounterD++;
+            }
         }
+        break;
+
+    case MOVEMENT_RIGHT:
+        MOVE_RIGHT(previousPosition);
+        if(previousPosition == cycleIndexPos)
+        {
+            if(cycleIndexPosMiddle)
+            {
+                if(middlePosCycleComplete)
+                {
+                    cycleCounterD++;
+                    middlePosCycleComplete = false;
+                }
+                else
+                {
+                    middlePosCycleComplete = true;
+                }
+            }
+            else
+            {
+                cycleCounterD++;
+            }
+        }
+        break;
+
+    default:
+        break;
     }
+
+    if(cycleCounterD >= 7500000)
+    {
+        digitalWrite(ON_BOARD_LED_PIN, HIGH);
+        cycleCounterD = 0;
+    }
+
+
+    // if(cycleIndex == 3)
+    // {
+    //     cycleIndex = 0;
+    //     cycleCounter++;
+    //     lcd.setCursor(0,2);
+    //     lcd.print("Count: ");
+    //     lcd.setCursor(8,2);
+    //     lcd.print(cycleCounter);
+    //     if(cycleCounter >= 7500000)
+    //     {
+    //          digitalWrite(ON_BOARD_LED_PIN, HIGH);
+    //          cycleCounter = 0;
+    //     }
+    // }
 
     PrintCurrentTime(lcd, rtc, 0, 0);
 }

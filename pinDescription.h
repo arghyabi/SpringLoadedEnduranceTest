@@ -16,4 +16,9 @@
 #define LCD_MODULE_ADDRESS          0x27
 #define RTC_MODULE_ADDRESS          0x68
 
+
+#define POSITION_LEFT  -1
+#define POSITION_MIDDLE  0
+#define POSITION_RIGHT  1
+
 #endif
