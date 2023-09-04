@@ -4,6 +4,6 @@
 #include <uRTCLib.h>
 #include <LiquidCrystal_I2C.h>
 
-void PrintCurrentTime(LiquidCrystal_I2C lcd, uRTCLib rtc, int row, int offset);
+void PrintCurrentTime(LiquidCrystal_I2C lcd, uRTCLib rtc, int row);
 
 #endif

@@ -19,9 +19,9 @@
 #define RTC_MODULE_ADDRESS          0x68
 
 
-#define POSITION_LEFT  -1
-#define POSITION_MIDDLE  0
-#define POSITION_RIGHT  1
+#define POSITION_LEFT               -1
+#define POSITION_MIDDLE             0
+#define POSITION_RIGHT              1
 
 #define EEPROM_COUNTER_SAVE_ADDRESS 2
 
