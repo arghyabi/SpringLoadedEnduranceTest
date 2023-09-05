@@ -1,4 +1,3 @@
-
 #include <Arduino.h>
 #include <Wire.h> // For I2C
 #include <LiquidCrystal_I2C.h>
@@ -127,7 +126,6 @@ void loop()
         lcd.print("Position Right ");
     }
 
-    cycleIndexPos = currentPosition;
     switch (MOVEMENT_DETECTION(previousPosition, currentPosition))
     {
     case MOVEMENT_LEFT:
