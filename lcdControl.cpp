@@ -3,6 +3,7 @@
 
 #include "lcdControl.h"
 #include "pinDescription.h"
+#include "common.h"
 
 void PrintCurrentTime(LiquidCrystal_I2C lcd, uRTCLib rtc, int row)
 {

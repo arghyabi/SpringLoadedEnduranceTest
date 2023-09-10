@@ -6,6 +6,7 @@
 
 
 #include "pinDescription.h"
+#include "common.h"
 #include "lcdControl.h"
 #include "eepromControl.h"
 
@@ -60,7 +61,7 @@ void setup()
     {
         previousPosition = POSITION_MIDDLE;
         cycleIndexPos = POSITION_MIDDLE;
-        cycleIndexPosMiddle = true;
+        // cycleIndexPosMiddle = true;
     }
 
     if(digitalRead(MICRO_SWITCH_S1_NC_PIN) && digitalRead(MICRO_SWITCH_S2_NO_PIN))
@@ -69,9 +70,9 @@ void setup()
         cycleIndexPos = POSITION_RIGHT;
     }
 
-    lcd.setCursor(0,2);
+    lcd.setCursor(0, ROW_NO_2);
     lcd.print("Count: ");
-    lcd.setCursor(8,2);
+    lcd.setCursor(8, ROW_NO_2);
     lcd.print(cycleCounter);
 
     digitalWrite(ON_BOARD_LED_PIN, LOW);
@@ -80,11 +81,11 @@ void setup()
 void loop()
 {
     rtc.refresh();
-    PrintCurrentTime(lcd, rtc, 0);
+    PrintCurrentTime(lcd, rtc, ROW_NO_0);
 
     if(digitalRead(POWER_LINE_DETECT_PIN) == LOW)
     {
-        lcd.setCursor(0,3);
+        lcd.setCursor(0, ROW_NO_3);
         lcd.print("Power Down");
 
         if(!isEepromReadNeed)
@@ -99,7 +100,7 @@ void loop()
         if(isEepromReadNeed)
         {
             cycleCounter = eepromRead(EEPROM_COUNTER_SAVE_ADDRESS);
-            lcd.setCursor(0,3);
+            lcd.setCursor(0, ROW_NO_3);
             lcd.print("           ");
             isEepromReadNeed = false;
         }
@@ -108,24 +109,50 @@ void loop()
     if(digitalRead(MICRO_SWITCH_S1_NO_PIN) && digitalRead(MICRO_SWITCH_S2_NC_PIN))
     {
         currentPosition = POSITION_LEFT;
-        lcd.setCursor(0,1);
+        lcd.setCursor(0, ROW_NO_1);
         lcd.print("Position Left  ");
     }
 
     if(digitalRead(MICRO_SWITCH_S1_NC_PIN) && digitalRead(MICRO_SWITCH_S2_NC_PIN))
     {
         currentPosition = POSITION_MIDDLE;
-        lcd.setCursor(0,1);
+        lcd.setCursor(0, ROW_NO_1);
         lcd.print("Position Middle");
     }
 
     if(digitalRead(MICRO_SWITCH_S1_NC_PIN) && digitalRead(MICRO_SWITCH_S2_NO_PIN))
     {
         currentPosition = POSITION_RIGHT;
-        lcd.setCursor(0,1);
+        lcd.setCursor(0, ROW_NO_1);
         lcd.print("Position Right ");
     }
 
+    if (currentPosition != previousPosition)
+    {
+        switch(currentPosition)
+        {
+            case POSITION_LEFT:
+            case POSITION_RIGHT:
+                if (cycleIndexPos == currentPosition)
+                {
+                    cycleCounter++;
+                }
+                break;
+            case POSITION_MIDDLE:
+                if (cycleIndexPosMiddle && (cycleIndexPos == currentPosition))
+                {
+                    cycleCounter++;
+                }
+                cycleIndexPosMiddle = !cycleIndexPosMiddle;
+                break;
+            default:
+                break;
+        }
+    }
+
+    previousPosition = currentPosition;
+
+/*
     switch (MOVEMENT_DETECTION(previousPosition, currentPosition))
     {
     case MOVEMENT_LEFT:
@@ -178,10 +205,10 @@ void loop()
         break;
     }
     previousPosition = currentPosition;
-
-    lcd.setCursor(0,2);
+*/
+    lcd.setCursor(0, ROW_NO_2);
     lcd.print("Count: ");
-    lcd.setCursor(8,2);
+    lcd.setCursor(8,ROW_NO_2);
     lcd.print(cycleCounter);
 
     if(cycleCounter >= 7500000)
