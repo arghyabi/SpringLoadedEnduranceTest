@@ -4,29 +4,19 @@
 #include <uRTCLib.h>
 #include <EEPROM.h>
 
-
 #include "pinDescription.h"
 #include "common.h"
 #include "lcdControl.h"
 #include "eepromControl.h"
 
-#define MOVE_LEFT(POS)  POS++
-#define MOVE_RIGHT(POS) POS--
-#define MOVEMENT_DETECTION(oldPos, newPos) oldPos - newPos
-#define MOVEMENT_LEFT   1
-#define MOVEMENT_RIGHT -1
-
 char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 
 LiquidCrystal_I2C lcd(LCD_MODULE_ADDRESS, LCD_MODULE_NO_OF_COLUMN, LCD_MODULE_NO_OF_ROW);
 uRTCLib rtc(RTC_MODULE_ADDRESS);
-int sequence = -1;
-int cycleIndex = 0;
-long int cycleCounter = 0;
 
+long int cycleCounter = 0;
 int cycleIndexPos = 0;
 bool cycleIndexPosMiddle = false;
-bool middlePosCycleComplete = false;
 bool isEepromReadNeed = true;
 
 int currentPosition;
@@ -61,7 +51,6 @@ void setup()
     {
         previousPosition = POSITION_MIDDLE;
         cycleIndexPos = POSITION_MIDDLE;
-        // cycleIndexPosMiddle = true;
     }
 
     if(digitalRead(MICRO_SWITCH_S1_NC_PIN) && digitalRead(MICRO_SWITCH_S2_NO_PIN))
@@ -152,60 +141,6 @@ void loop()
 
     previousPosition = currentPosition;
 
-/*
-    switch (MOVEMENT_DETECTION(previousPosition, currentPosition))
-    {
-    case MOVEMENT_LEFT:
-        MOVE_LEFT(previousPosition);
-        if(previousPosition == cycleIndexPos)
-        {
-            if(cycleIndexPosMiddle)
-            {
-                if(middlePosCycleComplete)
-                {
-                    cycleCounter++;
-                    middlePosCycleComplete = false;
-                }
-                else
-                {
-                    middlePosCycleComplete = true;
-                }
-            }
-            else
-            {
-                cycleCounter++;
-            }
-        }
-        break;
-
-    case MOVEMENT_RIGHT:
-        MOVE_RIGHT(previousPosition);
-        if(previousPosition == cycleIndexPos)
-        {
-            if(cycleIndexPosMiddle)
-            {
-                if(middlePosCycleComplete)
-                {
-                    cycleCounter++;
-                    middlePosCycleComplete = false;
-                }
-                else
-                {
-                    middlePosCycleComplete = true;
-                }
-            }
-            else
-            {
-                cycleCounter++;
-            }
-        }
-        break;
-
-    default:
-        break;
-    }
-    previousPosition = currentPosition;
-*/
     lcd.setCursor(0, ROW_NO_2);
     lcd.print("Count: ");
     lcd.setCursor(8,ROW_NO_2);
