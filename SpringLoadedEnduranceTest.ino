@@ -23,7 +23,7 @@ int currentPosition;
 int previousPosition;
 
 int buttonState;
-int lastButtonState = LOW;
+int lastButtonState = HIGH;
 int ResetBtnReading;
 
 unsigned long lastDebounceTime = 0;
@@ -71,7 +71,7 @@ void setup()
     lcd.setCursor(0, ROW_NO_2);
     lcd.print("Count: ");
     lcd.setCursor(8, ROW_NO_2);
-    lcd.print(cycleCounter);
+    lcd.print("Unknown");
 
     digitalWrite(ON_BOARD_LED_PIN, LOW);
 }
@@ -171,7 +171,7 @@ void loop()
         {
             buttonState = ResetBtnReading;
 
-            if (buttonState == HIGH)
+            if (buttonState == LOW)
             {
                 lcd.setCursor(0, ROW_NO_3);
                 lcd.print("Count Reseting...   ");
