@@ -150,10 +150,7 @@ void loop()
 
     previousPosition = currentPosition;
 
-    lcd.setCursor(0, ROW_NO_2);
-    lcd.print("Count: ");
-    lcd.setCursor(8,ROW_NO_2);
-    lcd.print(cycleCounter);
+    PrintCount(lcd, ROW_NO_2, cycleCounter);
 
     if(cycleCounter >= 7500000)
     {
