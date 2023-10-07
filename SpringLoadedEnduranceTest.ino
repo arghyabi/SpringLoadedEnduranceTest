@@ -22,6 +22,15 @@ bool isEepromReadNeed = true;
 int currentPosition;
 int previousPosition;
 
+int buttonState;
+int lastButtonState = LOW;
+int ResetBtnReading;
+
+unsigned long lastDebounceTime = 0;
+unsigned long debounceDelay = 5000;
+
+bool ResetTrigger = false;
+
 
 void setup()
 {
@@ -75,7 +84,7 @@ void loop()
     if(digitalRead(POWER_LINE_DETECT_PIN) == LOW)
     {
         lcd.setCursor(0, ROW_NO_3);
-        lcd.print("Power Down");
+        lcd.print("Power Down          ");
 
         if(!isEepromReadNeed)
         {
@@ -90,7 +99,7 @@ void loop()
         {
             cycleCounter = eepromRead(EEPROM_COUNTER_SAVE_ADDRESS);
             lcd.setCursor(0, ROW_NO_3);
-            lcd.print("           ");
+            lcd.print("                    ");
             isEepromReadNeed = false;
         }
     }
@@ -150,5 +159,39 @@ void loop()
     {
         digitalWrite(ON_BOARD_LED_PIN, HIGH);
         cycleCounter = 0;
+    }
+
+    ResetBtnReading = digitalRead(RESET_PUSH_SWITCH_PIN);
+
+    if (ResetBtnReading != lastButtonState)
+    {
+        lastDebounceTime = millis();
+    }
+
+    if ((millis() - lastDebounceTime) > debounceDelay)
+    {
+        if (ResetBtnReading != buttonState)
+        {
+            buttonState = ResetBtnReading;
+
+            if (buttonState == HIGH)
+            {
+                lcd.setCursor(0, ROW_NO_3);
+                lcd.print("Count Reseting...   ");
+                ResetTrigger = true;
+            }
+        }
+    }
+
+    lastButtonState = ResetBtnReading;
+
+    if (ResetTrigger)
+    {
+        eepromWrite(EEPROM_COUNTER_SAVE_ADDRESS, 0);
+        cycleCounter = 0;
+        ResetTrigger = false;
+        delay(2000);
+        lcd.setCursor(0, ROW_NO_3);
+        lcd.print("                    ");
     }
 }
