@@ -68,10 +68,8 @@ void setup()
         cycleIndexPos = POSITION_RIGHT;
     }
 
-    lcd.setCursor(0, ROW_NO_2);
-    lcd.print("Count: ");
-    lcd.setCursor(8, ROW_NO_2);
-    lcd.print("Unknown");
+    cycleCounter = eepromRead(EEPROM_COUNTER_SAVE_ADDRESS);
+    PrintCount(lcd, ROW_NO_2, cycleCounter);
 
     digitalWrite(ON_BOARD_LED_PIN, LOW);
 }
