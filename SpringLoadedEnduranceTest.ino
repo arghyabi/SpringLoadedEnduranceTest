@@ -30,6 +30,7 @@ unsigned long lastDebounceTime = 0;
 unsigned long debounceDelay = 5000;
 
 bool ResetTrigger = false;
+bool powerDownTrigger = false;
 
 
 void setup()
@@ -77,12 +78,26 @@ void setup()
 void loop()
 {
     rtc.refresh();
-    PrintCurrentTime(lcd, rtc, ROW_NO_0);
+    if(!powerDownTrigger){
+        PrintCurrentTime(lcd, rtc, ROW_NO_0);
+    }
 
     if(digitalRead(POWER_LINE_DETECT_PIN) == LOW)
     {
+        // lcd.setCursor(0, ROW_NO_3);
+        // lcd.print("Power Down          ");
+        lcd.setBacklight(LOW);
+
+        lcd.setCursor(0, ROW_NO_0);
+        lcd.print("                    ");
+        lcd.setCursor(0, ROW_NO_1);
+        lcd.print("                    ");
+        lcd.setCursor(0, ROW_NO_2);
+        lcd.print("                    ");
         lcd.setCursor(0, ROW_NO_3);
-        lcd.print("Power Down          ");
+        lcd.print("                    ");
+
+        powerDownTrigger = true;
 
         if(!isEepromReadNeed)
         {
@@ -93,6 +108,8 @@ void loop()
     }
     else
     {
+        lcd.setBacklight(HIGH);
+        powerDownTrigger = false;
         if(isEepromReadNeed)
         {
             cycleCounter = eepromRead(EEPROM_COUNTER_SAVE_ADDRESS);
